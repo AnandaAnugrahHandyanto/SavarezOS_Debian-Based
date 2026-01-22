@@ -28,8 +28,7 @@ jobs:
           sudo rm -rf config/archives/*.list* || true
           sudo mkdir -p config/archives
           echo "deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware" | sudo tee config/archives/debian.list.chroot
-          echo "deb http://deb.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware" | sudo tee -a config/archives/debian.list.chroot
-          sudo touch config/archives/debian-security.list.chroot
+          sudo touch config/archives/ubuntu-security.list.chroot
           sudo touch config/archives/ubuntu.list.chroot
           sudo lb build
 
