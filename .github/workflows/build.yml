@@ -23,14 +23,15 @@ jobs:
               --mirror-bootstrap "http://deb.debian.org/debian/" \
               --mirror-chroot "http://deb.debian.org/debian/" \
               --mirror-binary "http://deb.debian.org/debian/" \
-              --archive-areas "main contrib non-free non-free-firmware"
+              --archive-areas "main contrib non-free non-free-firmware" \
+              --security false \
+              --updates false \
+              --backports false
 
           sudo rm -rf config/archives/*.list* || true
           sudo mkdir -p config/archives
           echo "deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware" | sudo tee config/archives/debian.list.chroot
-          echo "deb http://deb.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware" | sudo tee -a config/archives/debian.list.chroot
-          sudo mkdir -p config/includes.chroot/etc/apt/
-          sudo truncate -s 0 config/includes.chroot/etc/apt/sources.list
+          sudo touch config/archives/debian-security.list.chroot
           sudo lb build
 
       - name: Upload ISO Artifact
