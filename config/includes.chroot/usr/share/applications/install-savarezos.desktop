@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Install SavarezOS
+GenericName=Live Installer
+Exec=sudo calamares
+Icon=calamares
+Terminal=false
+Categories=Qt;System;
