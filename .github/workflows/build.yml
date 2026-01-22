@@ -4,33 +4,29 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: debian:bookworm
+      options: --privileged
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install build tools
+      - name: Install dependencies inside Debian container
         run: |
-          sudo apt-get update
-          sudo apt-get install -y live-build debootstrap
+          apt-get update
+          apt-get install -y live-build debootstrap squashfs-tools xorriso
 
       - name: Build ISO
         run: |
-          sudo lb clean --purge
-          sudo lb config noauto \
+          lb clean --purge
+          lb config noauto \
               --architecture amd64 \
               --distribution bookworm \
               --binary-images iso-hybrid \
-              --mirror-bootstrap "http://deb.debian.org/debian/" \
-              --mirror-chroot "http://deb.debian.org/debian/" \
-              --mirror-binary "http://deb.debian.org/debian/" \
               --archive-areas "main contrib non-free non-free-firmware"
 
-          sudo rm -rf config/archives/*.list* || true
-          sudo mkdir -p config/archives
-          echo "deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware" | sudo tee config/archives/debian.list.chroot
-          sudo touch config/archives/ubuntu-security.list.chroot
-          sudo touch config/archives/ubuntu.list.chroot
-          sudo lb build
+          lb build
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
