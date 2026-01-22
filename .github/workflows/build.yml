@@ -21,6 +21,7 @@ jobs:
           sudo lb clean --purge
           rm -rf config/
           sudo lb config
+          rm -f config/archives/*.list.chroot
           sudo lb build
 
       - name: Upload ISO Artifact
