@@ -19,6 +19,7 @@ jobs:
       - name: Build ISO
         run: |
           sudo lb clean --purge
+          rm -rf config/
           sudo lb config
           sudo lb build
 
