@@ -1,0 +1,31 @@
+---
+componentName:  savarez
+
+windowExpand:    normal
+windowSize:      800,520
+windowPlacement: center
+
+sidebar:         widget
+navigation:      widget
+
+strings:
+    productName:         "SavarezOS"
+    shortProductName:    "Savarez"
+    productVersion:      "2026.01 Alpha"
+    shortProductVersion: "1.0"
+    shortVersionedName:  "SavarezOS 1.0"
+    menuName:            "SavarezOS"
+    productUrl:          "https://github.com/AnandaAnugrahHandyanto/SavarezOS_Debian-Based"
+    supportUrl:          "https://github.com/AnandaAnugrahHandyanto/SavarezOS_Debian-Based/issues"
+    releaseNotesUrl:     "https://github.com/anandaanugrahhandyanto/savarezos_debian-based/releases"
+
+images:
+    productLogo:         "/usr/share/savarez/savarez-logo.png"
+    productIcon:         "/usr/share/savarez/savarez-logo.png"
+    productWelcome:      "/usr/share/savarez/savarez-wallpaper.png"
+
+style:
+   sidebarBackground:    "#2c3e50"
+   sidebarText:          "#ecf0f1"
+   sidebarTextSelect:    "#3498db"
+   sidebarTextHighlight: "#2980b9"

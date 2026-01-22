@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+
+if [ -f /etc/calamares/settings.conf ]; then
+    sed -i 's/branding: debian/branding: savarez/g' /etc/calamares/settings.conf
+fi
+
+cat <<EOF > /etc/os-release
+PRETTY_NAME="SavarezOS GNU/Linux"
+NAME="SavarezOS"
+ID=savarezos
+ID_LIKE=debian
+HOME_URL="https://github.com/AnandaAnugrahHandyanto/SavarezOS_Debian-Based"
+EOF
+
+echo "SavarezOS" > /etc/hostname
