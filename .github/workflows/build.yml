@@ -20,7 +20,7 @@ jobs:
         run: |
           sudo lb clean --purge
           sudo lb config
-          sudo find config/archives -name "ubuntu*" -delete || true
+          sudo grep -lR "ubuntu" config/archives/ | xargs sudo rm -f || true
           sudo lb build
 
       - name: Upload ISO Artifact
