@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install dependencies inside Debian container
+      - name: Install dependencies
         run: |
           apt-get update
           apt-get install -y live-build debootstrap squashfs-tools xorriso
@@ -27,6 +27,21 @@ jobs:
               --archive-areas "main contrib non-free non-free-firmware"
 
           lb build
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        if: success()
+        with:
+          tag_name: SavarezOS-v${{ github.run_number }}
+          name: SavarezOS Alpha Release ${{ github.run_number }}
+          body: |
+            Automated Build for SavarezOS.
+            Nama Distro: SavarezOS
+            Identitas OS: SavarezOS GNU/Linux
+            Hostname: SavarezOS
+          files: "*.iso"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
