@@ -13,9 +13,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y live-build debootstrap
 
-      - name: Fix Permissions
-        run: chmod +x auto/config
-
       - name: Build ISO
         run: |
           sudo lb clean --purge
@@ -26,11 +23,7 @@ jobs:
               --mirror-bootstrap "http://deb.debian.org/debian/" \
               --mirror-chroot "http://deb.debian.org/debian/" \
               --mirror-binary "http://deb.debian.org/debian/" \
-              --archive-areas "main contrib non-free non-free-firmware" \
-              --linux-flavours amd64 \
-              --security false \
-              --updates false \
-              --backports false
+              --archive-areas "main contrib non-free non-free-firmware"
 
           sudo mkdir -p config/archives
           echo "deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware" | sudo tee config/archives/debian.list.chroot
