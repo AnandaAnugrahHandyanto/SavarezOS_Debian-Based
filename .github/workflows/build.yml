@@ -19,11 +19,21 @@ jobs:
       - name: Build ISO
         run: |
           sudo lb clean --purge
-          sudo lb config
-          mkdir -p config/archives
+          sudo lb config noauto \
+              --architecture amd64 \
+              --distribution bookworm \
+              --binary-images iso-hybrid \
+              --mirror-bootstrap "http://deb.debian.org/debian/" \
+              --mirror-chroot "http://deb.debian.org/debian/" \
+              --mirror-binary "http://deb.debian.org/debian/" \
+              --archive-areas "main contrib non-free non-free-firmware" \
+              --linux-flavours amd64 \
+              --security false \
+              --updates false \
+              --backports false
+
+          sudo mkdir -p config/archives
           echo "deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware" | sudo tee config/archives/debian.list.chroot
-          echo "deb http://deb.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware" | sudo tee -a config/archives/debian.list.chroot
-          sudo find config/ -type f -name "*" -exec grep -l "ubuntu" {} + | xargs sudo rm -f || true
           sudo lb build
 
       - name: Upload ISO Artifact
