@@ -19,12 +19,9 @@ jobs:
       - name: Build ISO
         run: |
           sudo lb clean --purge
-          rm -rf config/
           sudo lb config
-          mkdir -p config/archives
-          echo "deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware" | sudo tee config/archives/debian.list.chroot
-          echo "deb http://deb.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware" | sudo tee -a config/archives/debian.list.chroot
-          sudo rm -f config/archives/ubuntu* sudo lb build
+          sudo find config/archives -name "ubuntu*" -delete || true
+          sudo lb build
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
