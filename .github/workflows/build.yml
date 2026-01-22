@@ -1,0 +1,25 @@
+name: Build SavarezOS
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y live-build debootstrap
+
+      - name: Build ISO
+        run: |
+          sudo lb config --architecture amd64 --distribution bookworm --binary-images iso-hybrid
+          sudo lb build
+
+      - name: Upload ISO Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SavarezOS-Alpha-ISO
+          path: "*.iso"
