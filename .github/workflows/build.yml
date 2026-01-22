@@ -13,6 +13,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y live-build debootstrap
 
+      - name: Fix Permissions
+        run: chmod +x auto/config
+
       - name: Build ISO
         run: |
           sudo lb config --architecture amd64 --distribution bookworm --binary-images iso-hybrid
