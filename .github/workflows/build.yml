@@ -19,7 +19,7 @@ jobs:
       - name: Build ISO
         run: |
           sudo lb clean --purge
-          sudo lb config --architecture amd64 --distribution bookworm --binary-images iso-hybrid
+          sudo lb config
           sudo lb build
 
       - name: Upload ISO Artifact
