@@ -15,29 +15,37 @@ SUPPORT_URL="https://github.com/AnandaAnugrahHandyanto/SavarezOS_Debian-Based/is
 LOGO="savarez-logo"
 EOF
 
+echo "SavarezOS-Alpha" > /etc/debian_version
+
 mkdir -p /etc/xdg
 cat <<EOF > /etc/xdg/kcm-about-distrorc
 [General]
 LogoPath=/usr/share/savarez/savarez-logo.png
 EOF
 
+mkdir -p /usr/share/icons/hicolor/64x64/apps/
+cp /usr/share/savarez/savarez-logo.png /usr/share/icons/hicolor/64x64/apps/savarez-logo.png
+
 echo "SavarezOS" > /etc/hostname
-echo "SavarezOS-Alpha" > /etc/debian_version
 
 rm -f /usr/share/applications/install-debian.desktop
 rm -f /home/user/Desktop/install-debian.desktop
-mkdir -p /etc/skel/Desktop
 
 if [ -f /usr/share/applications/install-savarezos.desktop ]; then
     chmod +x /usr/share/applications/install-savarezos.desktop
-    cp /usr/share/applications/install-savarezos.desktop /etc/skel/Desktop/
+    mkdir -p /home/user/Desktop
+    cp /usr/share/applications/install-savarezos.desktop /home/user/Desktop/
+    if id "user" >/dev/null 2>&1; then
+        chown -R user:user /home/user/Desktop
+    fi
 fi
 
 WP_PATH="/usr/share/images/desktop-base"
-mkdir -p \$WP_PATH
-cp /usr/share/savarez/savarez-wallpaper.png \$WP_PATH/default-wallpaper.png
-cp /usr/share/savarez/savarez-wallpaper.png \$WP_PATH/login-background.svg
-mkdir -p /usr/share/wallpapers/SavarezOS/contents/images/
-cp /usr/share/savarez/savarez-wallpaper.png /usr/share/wallpapers/SavarezOS/contents/images/1920x1080.png
+mkdir -p $WP_PATH
+cp /usr/share/savarez/savarez-wallpaper.png $WP_PATH/default-wallpaper.png
+cp /usr/share/savarez/savarez-wallpaper.png $WP_PATH/login-background.svg
+
 mkdir -p /usr/share/wallpapers/Next/contents/images/
 cp /usr/share/savarez/savarez-wallpaper.png /usr/share/wallpapers/Next/contents/images/base_size.png
+mkdir -p /usr/share/wallpapers/SavarezOS/contents/images/
+cp /usr/share/savarez/savarez-wallpaper.png /usr/share/wallpapers/SavarezOS/contents/images/1920x1080.png
