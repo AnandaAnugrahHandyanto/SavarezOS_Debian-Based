@@ -20,14 +20,11 @@ echo "SavarezOS" > /etc/hostname
 
 mkdir -p /usr/share/icons/hicolor/64x64/apps/
 cp /usr/share/savarez/savarez-logo.png /usr/share/icons/hicolor/64x64/apps/savarez-logo.png
-
 mkdir -p /etc/xdg
-cat <<EOF > /etc/xdg/kcm-about-distrorc
-[General]
-LogoPath=/usr/share/savarez/savarez-logo.png
-EOF
+echo "[General]\nLogoPath=/usr/share/savarez/savarez-logo.png" > /etc/xdg/kcm-about-distrorc
 
 WP_FILE="/usr/share/savarez/savarez-wallpaper.png"
+
 mkdir -p /usr/share/images/desktop-base
 cp $WP_FILE /usr/share/images/desktop-base/default-wallpaper.png
 cp $WP_FILE /usr/share/images/desktop-base/desktop-wallpaper
@@ -52,3 +49,5 @@ Icon=preferences-desktop-wallpaper
 Terminal=false
 NoDisplay=true
 EOF
+
+rm -f /usr/share/applications/install-debian.desktop
