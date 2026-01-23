@@ -23,7 +23,7 @@ bison
 flex
 libssl-dev
 make
-openjdk-21-jdk
+openjdk-17-jdk
 python3
 zip
 unzip
