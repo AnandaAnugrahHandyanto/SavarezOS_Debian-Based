@@ -11,7 +11,6 @@ navigation:      widget
 strings:
     productName:         "SavarezOS"
     shortProductName:    "Savarez"
-    productVersion:      "2026.01 Alpha"
     shortProductVersion: "1.0"
     shortVersionedName:  "SavarezOS 1.0"
     menuName:            "SavarezOS"
