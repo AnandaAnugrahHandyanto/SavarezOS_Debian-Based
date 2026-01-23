@@ -11,6 +11,23 @@ NAME="SavarezOS"
 ID=savarezos
 ID_LIKE=debian
 HOME_URL="https://github.com/AnandaAnugrahHandyanto/SavarezOS_Debian-Based"
+SUPPORT_URL="https://github.com/AnandaAnugrahHandyanto/SavarezOS_Debian-Based/issues"
 EOF
 
 echo "SavarezOS" > /etc/hostname
+
+rm -f /usr/share/applications/install-debian.desktop
+rm -f /home/user/Desktop/install-debian.desktop
+
+mkdir -p /etc/skel/Desktop
+
+if [ -f /usr/share/applications/install-savarezos.desktop ]; then
+    chmod +x /usr/share/applications/install-savarezos.desktop
+    # Copy shortcut ke desktop agar langsung terlihat saat live session
+    cp /usr/share/applications/install-savarezos.desktop /etc/skel/Desktop/
+fi
+
+if [ -f /usr/share/savarez/savarez-wallpaper.png ]; then
+    mkdir -p /usr/share/images/desktop-base/
+    cp /usr/share/savarez/savarez-wallpaper.png /usr/share/images/desktop-base/default-wallpaper.png
+fi

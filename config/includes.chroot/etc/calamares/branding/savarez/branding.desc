@@ -17,12 +17,15 @@ strings:
     menuName:            "SavarezOS"
     productUrl:          "https://github.com/AnandaAnugrahHandyanto/SavarezOS_Debian-Based"
     supportUrl:          "https://github.com/AnandaAnugrahHandyanto/SavarezOS_Debian-Based/issues"
-    releaseNotesUrl:     "https://github.com/anandaanugrahhandyanto/savarezos_debian-based/releases"
+    releaseNotesUrl:     "https://github.com/AnandaAnugrahHandyanto/SavarezOS_Debian-Based/releases"
 
 images:
     productLogo:         "/usr/share/savarez/savarez-logo.png"
     productIcon:         "/usr/share/savarez/savarez-logo.png"
     productWelcome:      "/usr/share/savarez/savarez-wallpaper.png"
+
+slideshow:
+    - "/usr/share/savarez/savarez-wallpaper.png"
 
 style:
    sidebarBackground:    "#2c3e50"
