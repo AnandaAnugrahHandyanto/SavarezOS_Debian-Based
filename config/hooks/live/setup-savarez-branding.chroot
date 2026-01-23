@@ -40,12 +40,21 @@ if [ -f /usr/share/applications/install-savarezos.desktop ]; then
     fi
 fi
 
+WP_FILE="/usr/share/savarez/savarez-wallpaper.png"
 WP_PATH="/usr/share/images/desktop-base"
+
 mkdir -p $WP_PATH
-cp /usr/share/savarez/savarez-wallpaper.png $WP_PATH/default-wallpaper.png
-cp /usr/share/savarez/savarez-wallpaper.png $WP_PATH/login-background.svg
+cp $WP_FILE $WP_PATH/default-wallpaper.png
+cp $WP_FILE $WP_PATH/desktop-wallpaper
+cp $WP_FILE $WP_PATH/login-background.svg
+cp $WP_FILE $WP_PATH/savarez-wallpaper.png
 
 mkdir -p /usr/share/wallpapers/Next/contents/images/
-cp /usr/share/savarez/savarez-wallpaper.png /usr/share/wallpapers/Next/contents/images/base_size.png
-mkdir -p /usr/share/wallpapers/SavarezOS/contents/images/
-cp /usr/share/savarez/savarez-wallpaper.png /usr/share/wallpapers/SavarezOS/contents/images/1920x1080.png
+cp $WP_FILE /usr/share/wallpapers/Next/contents/images/base_size.png
+rm -f /usr/share/wallpapers/Next/metadata.desktop
+
+mkdir -p /etc/skel/.config
+cat <<EOF > /etc/skel/.config/plasma-localerc
+[Wallpaper]
+Image=$WP_FILE
+EOF
