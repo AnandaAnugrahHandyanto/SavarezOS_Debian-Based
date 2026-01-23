@@ -18,6 +18,13 @@ EOF
 echo "SavarezOS-Alpha" > /etc/debian_version
 echo "SavarezOS" > /etc/hostname
 
+mkdir -p /etc/live/config.conf.d
+cat <<EOF > /etc/live/config.conf.d/savarez.conf
+LIVE_USER_DEFAULT_GROUPS="sudo audio video cdrom desktop plugdev"
+LIVE_USERNAME="user"
+LIVE_USER_FULLNAME="SavarezOS User"
+EOF
+
 mkdir -p /usr/share/icons/hicolor/64x64/apps/
 cp /usr/share/savarez/savarez-logo.png /usr/share/icons/hicolor/64x64/apps/savarez-logo.png
 mkdir -p /etc/xdg
@@ -37,9 +44,9 @@ done
 cp "$WP_SAVAREZ" /usr/share/wallpapers/Next/contents/images/base_size.png
 rm -f /usr/share/wallpapers/Next/metadata.desktop
 
-mkdir -p /usr/share/sddm/themes/debian-theme/
-cp "$WP_SAVAREZ" /usr/share/sddm/themes/debian-theme/debian-background.png
-if [ -f /usr/share/sddm/themes/debian-theme/theme.conf ]; then
+if [ -d /usr/share/sddm/themes/debian-theme ]; then
+    mkdir -p /usr/share/sddm/themes/debian-theme/
+    cp "$WP_SAVAREZ" /usr/share/sddm/themes/debian-theme/debian-background.png
     sed -i 's/Debian Live/SavarezOS Live/g' /usr/share/sddm/themes/debian-theme/theme.conf
     cp /usr/share/savarez/savarez-logo.png /usr/share/sddm/themes/debian-theme/logo.png
 fi
