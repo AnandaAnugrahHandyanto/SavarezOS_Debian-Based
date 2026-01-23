@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y live-build debootstrap squashfs-tools xorriso
+          apt-get install -y live-build debootstrap squashfs-tools xorriso zip
 
       - name: Build ISO
         run: |
@@ -30,21 +30,37 @@ jobs:
               --archive-areas "main contrib non-free non-free-firmware"
           lb build
 
+      - name: Compress ISO for Release
+        run: |
+          zip SavarezOS-Alpha-v${{ github.run_number }}.zip *.iso
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         if: success()
         with:
           tag_name: SavarezOS-v${{ github.run_number }}
-          name: SavarezOS Alpha v${{ github.run_number }}
+          name: "SavarezOS Alpha v${{ github.run_number }}"
           body: |
-            Successfully created from commit: `${{ github.sha }}`
+            ## 🚀 SavarezOS Build Successful!
+                        
+            ### 🛠 Build Information
+            - **Build Number:** `${{ github.run_number }}`
+            - **Commit SHA:** `${{ github.sha }}`
+            - **Status:** `Stable Alpha`
             
-            **System Information:**
-            - **Distro Name:** SavarezOS
-            - **Base:** Debian Bookworm
-            - **Desktop:** KDE Plasma
-            - **Hostname:** SavarezOS
-          files: "*.iso"
+            ### 🖥️ System Specifications
+            - **Operating System:** SavarezOS GNU/Linux
+            - **Base Distribution:** Debian Bookworm
+            - **Desktop Environment:** KDE Plasma
+            - **Architecture:** amd64
+            - **Default Hostname:** `SavarezOS`
+            
+            ### 📦 Download Instructions
+            Due to GitHub's file size limitations, the ISO has been compressed into a **ZIP** file. Please extract it to get the `.iso` file for installation.
+            
+            ---
+            *Built with ❤️ by SavarezOS Team*
+          files: "*.zip"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
