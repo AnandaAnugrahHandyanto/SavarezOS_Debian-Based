@@ -20,27 +20,29 @@ echo "SavarezOS" > /etc/hostname
 
 mkdir -p /usr/share/icons/hicolor/64x64/apps/
 cp /usr/share/savarez/savarez-logo.png /usr/share/icons/hicolor/64x64/apps/savarez-logo.png
-mkdir -p /etc/xdg
-echo "[General]\nLogoPath=/usr/share/savarez/savarez-logo.png" > /etc/xdg/kcm-about-distrorc
 
-rm -f /usr/share/applications/install-debian.desktop
-if [ -f /usr/share/applications/install-savarezos.desktop ]; then
-    chmod +x /usr/share/applications/install-savarezos.desktop
-    mkdir -p /home/user/Desktop
-    cp /usr/share/applications/install-savarezos.desktop /home/user/Desktop/
-    chown -R user:user /home/user/Desktop || true
-fi
+mkdir -p /etc/xdg
+cat <<EOF > /etc/xdg/kcm-about-distrorc
+[General]
+LogoPath=/usr/share/savarez/savarez-logo.png
+EOF
 
 WP_FILE="/usr/share/savarez/savarez-wallpaper.png"
-
 mkdir -p /usr/share/images/desktop-base
 cp $WP_FILE /usr/share/images/desktop-base/default-wallpaper.png
 cp $WP_FILE /usr/share/images/desktop-base/desktop-wallpaper
 
-mkdir -p /usr/share/wallpapers/Next/contents/images
+mkdir -p /usr/share/wallpapers/Next/contents/images/
 cp $WP_FILE /usr/share/wallpapers/Next/contents/images/base_size.png
 
+mkdir -p /etc/skel/Desktop
 mkdir -p /etc/skel/.config/autostart
+
+if [ -f /usr/share/applications/install-savarezos.desktop ]; then
+    chmod +x /usr/share/applications/install-savarezos.desktop
+    cp /usr/share/applications/install-savarezos.desktop /etc/skel/Desktop/
+fi
+
 cat <<EOF > /etc/skel/.config/autostart/set-wallpaper.desktop
 [Desktop Entry]
 Type=Application
@@ -50,7 +52,3 @@ Icon=preferences-desktop-wallpaper
 Terminal=false
 NoDisplay=true
 EOF
-
-mkdir -p /home/user/.config/autostart
-cp /etc/skel/.config/autostart/set-wallpaper.desktop /home/user/.config/autostart/
-chown -R user:user /home/user/.config || true
