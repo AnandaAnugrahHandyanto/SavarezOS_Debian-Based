@@ -30,9 +30,9 @@ jobs:
               --archive-areas "main contrib non-free non-free-firmware"
           lb build
 
-      - name: Compress ISO for Release
+      - name: Compress and Split ISO for Release
         run: |
-          zip SavarezOS-Alpha-v${{ github.run_number }}.zip *.iso
+          zip -s 1500m SavarezOS-Alpha-v${{ github.run_number }}.zip *.iso
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -43,24 +43,31 @@ jobs:
           body: |
             ## 🚀 SavarezOS Build Successful!
                         
-            ### 🛠 Build Information
+            ### 🛠 Build Metadata
             - **Build Number:** `${{ github.run_number }}`
             - **Commit SHA:** `${{ github.sha }}`
+            - **Build Date:** $(date +'%Y-%m-%d %H:%M:%S')
             - **Status:** `Stable Alpha`
             
             ### 🖥️ System Specifications
-            - **Operating System:** SavarezOS GNU/Linux
-            - **Base Distribution:** Debian Bookworm
+            - **OS Name:** SavarezOS GNU/Linux
+            - **Base:** Debian 12 (Bookworm)
             - **Desktop Environment:** KDE Plasma
-            - **Architecture:** amd64
-            - **Default Hostname:** `SavarezOS`
+            - **Architecture:** x86_64 (amd64)
+            - **Hostname:** `SavarezOS`
             
-            ### 📦 Download Instructions
-            Due to GitHub's file size limitations, the ISO has been compressed into a **ZIP** file. Please extract it to get the `.iso` file for installation.
+            ### 📦 Important: How to Extract the ISO
+            GitHub has a 2GB file size limit for individual uploads. Therefore, the ISO has been split into multiple parts (`.zip`, `.z01`, etc.).
+            
+            **To reconstruct the original ISO:**
+            1. Download **ALL** files listed below.
+            2. Place them in the same folder.
+            3. Open the main **`.zip`** file using **7-Zip** or **WinRAR**.
+            4. Extract the content, and the tool will automatically merge the parts into one single `.iso` file.
             
             ---
-            *Built with ❤️ by SavarezOS Team*
-          files: "*.zip"
+            *Built with ❤️ by SavarezOS Development Team*
+          files: "SavarezOS-Alpha-v${{ github.run_number }}.z*"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
