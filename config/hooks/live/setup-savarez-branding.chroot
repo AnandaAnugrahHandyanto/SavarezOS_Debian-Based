@@ -21,7 +21,8 @@ echo "SavarezOS" > /etc/hostname
 mkdir -p /usr/share/icons/hicolor/64x64/apps/
 cp /usr/share/savarez/savarez-logo.png /usr/share/icons/hicolor/64x64/apps/savarez-logo.png
 mkdir -p /etc/xdg
-printf "[General]\nLogoPath=/usr/share/savarez/savarez-logo.png\n" > /etc/xdg/kcm-about-distrorc
+echo "[General]" > /etc/xdg/kcm-about-distrorc
+echo "LogoPath=/usr/share/savarez/savarez-logo.png" >> /etc/xdg/kcm-about-distrorc
 
 WP_SAVAREZ="/usr/share/savarez/savarez-wallpaper.png"
 
@@ -38,6 +39,10 @@ rm -f /usr/share/wallpapers/Next/metadata.desktop
 
 mkdir -p /usr/share/sddm/themes/debian-theme/
 cp "$WP_SAVAREZ" /usr/share/sddm/themes/debian-theme/debian-background.png
+if [ -f /usr/share/sddm/themes/debian-theme/theme.conf ]; then
+    sed -i 's/Debian Live/SavarezOS Live/g' /usr/share/sddm/themes/debian-theme/theme.conf
+    cp /usr/share/savarez/savarez-logo.png /usr/share/sddm/themes/debian-theme/logo.png
+fi
 
 mkdir -p /etc/skel/Desktop
 mkdir -p /etc/skel/.config/autostart
@@ -51,10 +56,12 @@ cat <<EOF > /etc/skel/.config/autostart/set-wallpaper.desktop
 [Desktop Entry]
 Type=Application
 Name=Set Savarez Wallpaper
-Exec=dbus-send --session --dest=org.kde.plasmashell --type=method_call /MainApplication org.kde.PlasmaShell.evaluateScript string:'var allDesktops = desktops(); for (var i = 0; i < allDesktops.length; i++) { d = allDesktops[i]; d.wallpaperPlugin = "org.kde.image"; d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General"); d.writeConfig("Image", "file://$WP_SAVAREZ"); }'
+Exec=dbus-send --session --dest=org.kde.plasmashell --type=method_call /MainApplication org.kde.PlasmaShell.evaluateScript string:'var allDesktops = desktops(); for (var i = 0; i < allDesktops.length; i++) { d = allDesktops[i]; d.wallpaperPlugin = "org.kde.image"; d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General"); d.writeConfig("Image", "file:///usr/share/savarez/savarez-wallpaper.png"); }'
 Icon=preferences-desktop-wallpaper
 Terminal=false
 NoDisplay=true
 EOF
 
+echo "SavarezOS GNU/Linux \n \l" > /etc/issue
+echo "SavarezOS GNU/Linux \n \l" > /etc/issue.net
 rm -f /usr/share/applications/install-debian.desktop
