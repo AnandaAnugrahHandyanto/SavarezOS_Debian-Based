@@ -1,0 +1,21 @@
+QWidget {
+    font-family: "Source Sans Pro", "Ubuntu", sans-serif;
+    background-color: #1e1e2e;
+    color: #cdd6f4;
+}
+
+QPushButton {
+    background-color: #f38ba8;
+    color: #1e1e2e;
+    border-radius: 4px;
+    padding: 6px;
+    font-weight: bold;
+}
+
+QPushButton:hover {
+    background-color: #eba0ac;
+}
+
+QSidebar {
+    background-color: #181825;
+}

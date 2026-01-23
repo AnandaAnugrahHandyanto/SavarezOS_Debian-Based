@@ -27,7 +27,7 @@ slideshow:
     - "/usr/share/savarez/savarez-wallpaper.png"
 
 style:
-   sidebarBackground:    "#2c3e50"
-   sidebarText:          "#ecf0f1"
-   sidebarTextSelect:    "#3498db"
-   sidebarTextHighlight: "#2980b9"
+   sidebarBackground:    "#1e1e2e"
+   sidebarText:          "#cdd6f4"
+   sidebarTextSelect:    "#f38ba8"
+   sidebarTextHighlight: "#eba0ac"
