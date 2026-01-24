@@ -25,9 +25,10 @@ LIVE_USERNAME="user"
 LIVE_USER_FULLNAME="SavarezOS User"
 EOF
 
+WP_SAVAREZ="/usr/share/savarez/savarez-wallpaper.png"
+
 apt-get purge -y desktop-base || true
 
-WP_SAVAREZ="/usr/share/savarez/savarez-wallpaper.png"
 for dir in /usr/share/wallpapers/Next /usr/share/images/desktop-base; do
     mkdir -p "$dir/contents/images"
     find "$dir" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.svg" \) -exec cp -f "$WP_SAVAREZ" {} \;

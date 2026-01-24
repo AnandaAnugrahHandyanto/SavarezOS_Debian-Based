@@ -10,8 +10,6 @@ konsole
 dolphin
 ark
 network-manager-gnome
-sddm-theme-debian-plasma
-desktop-base
 
 # Android Dev Tools
 adb
@@ -34,5 +32,9 @@ libncurses5
 # Bootloader essentials
 grub-efi-amd64-bin
 grub-pc-bin
-grub-common
 binutils
+
+# Fix Login & Branding Stability
+desktop-base
+libpam-runtime
+policykit-1-gnome
