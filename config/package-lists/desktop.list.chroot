@@ -30,6 +30,6 @@ unzip
 libncurses5
 
 # Bootloader essentials
-grub-pc
 grub-efi-amd64
+grub-common
 binutils
