@@ -40,3 +40,7 @@ desktop-base
 libpam-runtime
 policykit-1-gnome
 accountsservice
+
+xserver-xorg-video-all
+xserver-xorg-input-all
+libgl1-mesa-dri
