@@ -47,5 +47,6 @@ libgl1-mesa-dri
 
 firmware-linux
 firmware-linux-nonfree
-firmware-liberation
 firmware-misc-nonfree
+firmware-amd-graphics
+firmware-realtek
