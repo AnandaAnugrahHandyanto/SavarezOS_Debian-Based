@@ -44,3 +44,8 @@ accountsservice
 xserver-xorg-video-all
 xserver-xorg-input-all
 libgl1-mesa-dri
+
+firmware-linux
+firmware-linux-nonfree
+firmware-liberation
+firmware-misc-nonfree

@@ -13,8 +13,10 @@ LOGO="savarez-logo"
 EOF
 
 mkdir -p /usr/share/icons/hicolor/scalable/apps
-cp -f /usr/share/savarez/savarez-logo.png /usr/share/icons/hicolor/scalable/apps/savarez-logo.png
-ln -sf /usr/share/savarez/savarez-logo.png /usr/share/pixmaps/savarez-logo.png
+if [ -f /usr/share/savarez/savarez-logo.png ]; then
+    cp -f /usr/share/savarez/savarez-logo.png /usr/share/icons/hicolor/scalable/apps/savarez-logo.png
+    ln -sf /usr/share/savarez/savarez-logo.png /usr/share/pixmaps/savarez-logo.png
+fi
 
 mkdir -p /etc/live/config.conf.d
 cat <<EOF > /etc/live/config.conf.d/savarez.conf
@@ -23,13 +25,13 @@ LIVE_USERNAME="user"
 LIVE_USER_FULLNAME="SavarezOS User"
 EOF
 
-apt-get purge -y desktop-base || true
-
 WP_SAVAREZ="/usr/share/savarez/savarez-wallpaper.png"
-for dir in /usr/share/wallpapers/Next /usr/share/images/desktop-base; do
-    mkdir -p "$dir/contents/images"
-    find "$dir" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.svg" \) -exec cp -f "$WP_SAVAREZ" {} \;
-done
+if [ -f "$WP_SAVAREZ" ]; then
+    for dir in /usr/share/wallpapers/Next /usr/share/images/desktop-base; do
+        mkdir -p "$dir/contents/images"
+        find "$dir" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.svg" \) -exec cp -f "$WP_SAVAREZ" {} \; || true
+    done
+fi
 
 mkdir -p /etc/skel/.config
 cat <<EOF > /etc/skel/.config/plasma-org.kde.plasma.desktop-appletsrc
@@ -39,18 +41,19 @@ wallpaperplugin=org.kde.image
 Image=file://$WP_SAVAREZ
 EOF
 
+mkdir -p /usr/share/sddm/themes/debian-theme
 if [ -d /usr/share/sddm/themes/debian-theme ]; then
-    cp -f "$WP_SAVAREZ" /usr/share/sddm/themes/debian-theme/debian-background.png
-    cp -f /usr/share/savarez/savarez-logo.png /usr/share/sddm/themes/debian-theme/logo.png
-    sed -i 's/Debian/SavarezOS/g' /usr/share/sddm/themes/debian-theme/theme.conf
+    [ -f "$WP_SAVAREZ" ] && cp -f "$WP_SAVAREZ" /usr/share/sddm/themes/debian-theme/debian-background.png
+    [ -f /usr/share/savarez/savarez-logo.png ] && cp -f /usr/share/savarez/savarez-logo.png /usr/share/sddm/themes/debian-theme/logo.png
+    [ -f /usr/share/sddm/themes/debian-theme/theme.conf ] && sed -i 's/Debian/SavarezOS/g' /usr/share/sddm/themes/debian-theme/theme.conf
 fi
 
-mkdir -p /etc/X11/xorg.conf.d/
-cat <<EOF > /etc/X11/xorg.conf.d/20-modesetting.conf
-Section "Device"
-    Identifier "vboxvideo"
-    Driver "modesetting"
-EndSection
+mkdir -p /etc/sddm.conf.d
+cat <<EOF > /etc/sddm.conf.d/autologin.conf
+[Autologin]
+User=user
+Session=plasma
+Relogin=false
 EOF
 
 mkdir -p /etc/skel/Desktop
