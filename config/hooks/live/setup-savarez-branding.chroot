@@ -1,9 +1,7 @@
 #!/bin/sh
 set -e
 
-if [ -f /etc/calamares/settings.conf ]; then
-    sed -i 's/branding: debian/branding: savarez/g' /etc/calamares/settings.conf
-fi
+apt-get update && apt-get install -y grub-pc grub-efi-amd64 binutils
 
 cat <<EOF > /etc/os-release
 PRETTY_NAME="SavarezOS GNU/Linux"
@@ -25,40 +23,29 @@ LIVE_USERNAME="user"
 LIVE_USER_FULLNAME="SavarezOS User"
 EOF
 
-mkdir -p /usr/share/icons/hicolor/64x64/apps/
-cp /usr/share/savarez/savarez-logo.png /usr/share/icons/hicolor/64x64/apps/savarez-logo.png
-mkdir -p /etc/xdg
-echo "[General]" > /etc/xdg/kcm-about-distrorc
-echo "LogoPath=/usr/share/savarez/savarez-logo.png" >> /etc/xdg/kcm-about-distrorc
-
 WP_SAVAREZ="/usr/share/savarez/savarez-wallpaper.png"
 
-mkdir -p /usr/share/images/desktop-base
-cp "$WP_SAVAREZ" /usr/share/images/desktop-base/default-wallpaper.png
-cp "$WP_SAVAREZ" /usr/share/images/desktop-base/desktop-wallpaper
-
 mkdir -p /usr/share/wallpapers/Next/contents/images/
-for size in "1024x768" "1280x1024" "1600x1200" "1920x1080" "3840x2160"; do
-    cp "$WP_SAVAREZ" "/usr/share/wallpapers/Next/contents/images/$size.png"
+for img in /usr/share/wallpapers/Next/contents/images/*; do
+    cp -f "$WP_SAVAREZ" "$img"
 done
-cp "$WP_SAVAREZ" /usr/share/wallpapers/Next/contents/images/base_size.png
-rm -f /usr/share/wallpapers/Next/metadata.desktop
+cp -f "$WP_SAVAREZ" /usr/share/wallpapers/Next/contents/images/base_size.png
+
+mkdir -p /usr/share/images/desktop-base
+cp -f "$WP_SAVAREZ" /usr/share/images/desktop-base/default-wallpaper.png
+cp -f "$WP_SAVAREZ" /usr/share/images/desktop-base/desktop-wallpaper
+ln -sf "$WP_SAVAREZ" /etc/alternatives/desktop-background
 
 if [ -d /usr/share/sddm/themes/debian-theme ]; then
-    mkdir -p /usr/share/sddm/themes/debian-theme/
-    cp "$WP_SAVAREZ" /usr/share/sddm/themes/debian-theme/debian-background.png
+    cp -f "$WP_SAVAREZ" /usr/share/sddm/themes/debian-theme/debian-background.png
     sed -i 's/Debian Live/SavarezOS Live/g' /usr/share/sddm/themes/debian-theme/theme.conf
-    cp /usr/share/savarez/savarez-logo.png /usr/share/sddm/themes/debian-theme/logo.png
 fi
 
-mkdir -p /etc/skel/Desktop
+if [ -f /etc/calamares/settings.conf ]; then
+    sed -i 's/branding: debian/branding: savarez/g' /etc/calamares/settings.conf
+fi
+
 mkdir -p /etc/skel/.config/autostart
-
-if [ -f /usr/share/applications/install-savarezos.desktop ]; then
-    chmod +x /usr/share/applications/install-savarezos.desktop
-    cp /usr/share/applications/install-savarezos.desktop /etc/skel/Desktop/
-fi
-
 cat <<EOF > /etc/skel/.config/autostart/set-wallpaper.desktop
 [Desktop Entry]
 Type=Application
@@ -70,5 +57,4 @@ NoDisplay=true
 EOF
 
 echo "SavarezOS GNU/Linux \n \l" > /etc/issue
-echo "SavarezOS GNU/Linux \n \l" > /etc/issue.net
 rm -f /usr/share/applications/install-debian.desktop
