@@ -23,23 +23,29 @@ EOF
 
 WP_SAVAREZ="/usr/share/savarez/savarez-wallpaper.png"
 
-mkdir -p /usr/share/wallpapers/Next/contents/images/
-if [ -d /usr/share/wallpapers/Next/contents/images/ ]; then
-    find /usr/share/wallpapers/Next/contents/images/ -type f \( -name "*.png" -o -name "*.jpg" \) -exec cp -f "$WP_SAVAREZ" {} \;
-fi
-cp -f "$WP_SAVAREZ" /usr/share/wallpapers/Next/contents/images/base_size.png
-
 mkdir -p /usr/share/images/desktop-base
 cp -f "$WP_SAVAREZ" /usr/share/images/desktop-base/default-wallpaper.png
 cp -f "$WP_SAVAREZ" /usr/share/images/desktop-base/desktop-wallpaper
 
+mkdir -p /usr/share/wallpapers/Next/contents/images/
+if [ -d /usr/share/wallpapers/Next/contents/images/ ]; then
+    find /usr/share/wallpapers/Next/contents/images/ -type f -exec cp -f "$WP_SAVAREZ" {} \;
+fi
+
 if [ -d /usr/share/sddm/themes/debian-theme ]; then
     cp -f "$WP_SAVAREZ" /usr/share/sddm/themes/debian-theme/debian-background.png
     sed -i 's/Debian Live/SavarezOS Live/g' /usr/share/sddm/themes/debian-theme/theme.conf
-    cp -f /usr/share/savarez/savarez-logo.png /usr/share/sddm/themes/debian-theme/logo.png || true
+    cp -f /usr/share/savarez/savarez-logo.png /usr/share/sddm/themes/debian-theme/logo.png
 fi
 
+mkdir -p /etc/skel/Desktop
 mkdir -p /etc/skel/.config/autostart
+
+if [ -f /usr/share/applications/install-savarezos.desktop ]; then
+    cp -f /usr/share/applications/install-savarezos.desktop /etc/skel/Desktop/
+    chmod +x /etc/skel/Desktop/install-savarezos.desktop
+fi
+
 cat <<EOF > /etc/skel/.config/autostart/set-wallpaper.desktop
 [Desktop Entry]
 Type=Application
@@ -50,5 +56,4 @@ Terminal=false
 NoDisplay=true
 EOF
 
-echo "SavarezOS GNU/Linux \n \l" > /etc/issue
 rm -f /usr/share/applications/install-debian.desktop
