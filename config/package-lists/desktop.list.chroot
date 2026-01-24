@@ -10,6 +10,8 @@ konsole
 dolphin
 ark
 network-manager-gnome
+sddm-theme-debian-plasma
+desktop-base
 
 # Android Dev Tools
 adb
