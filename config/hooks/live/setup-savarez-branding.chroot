@@ -10,7 +10,6 @@ NAME="SavarezOS"
 ID=savarezos
 ID_LIKE=debian
 HOME_URL="https://github.com/AnandaAnugrahHandyanto/SavarezOS_Debian-Based"
-SUPPORT_URL="https://github.com/AnandaAnugrahHandyanto/SavarezOS_Debian-Based/issues"
 LOGO="savarez-logo"
 EOF
 
@@ -48,6 +47,13 @@ if [ -d /usr/share/sddm/themes/debian-theme ]; then
     cp -f /usr/share/savarez/savarez-logo.png /usr/share/sddm/themes/debian-theme/logo.png
     sed -i 's/Debian Live/SavarezOS/g' /usr/share/sddm/themes/debian-theme/theme.conf
 fi
+
+mkdir -p /etc/sddm.conf.d
+cat <<EOF > /etc/sddm.conf.d/autologin.conf
+[Autologin]
+User=user
+Session=plasma
+EOF
 
 mkdir -p /etc/skel/Desktop
 if [ -f /usr/share/applications/install-savarezos.desktop ]; then

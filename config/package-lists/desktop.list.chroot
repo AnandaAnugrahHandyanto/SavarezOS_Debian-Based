@@ -31,10 +31,12 @@ libncurses5
 
 # Bootloader essentials
 grub-efi-amd64-bin
+grub-common
 grub-pc-bin
 binutils
 
-# Fix Login & Branding Stability
+# Fix Login Stability
 desktop-base
 libpam-runtime
 policykit-1-gnome
+accountsservice
