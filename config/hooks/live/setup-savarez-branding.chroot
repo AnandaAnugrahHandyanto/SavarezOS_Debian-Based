@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+echo "SavarezOS-Alpha" > /etc/debian_version
+echo "SavarezOS" > /etc/hostname
+
 cat <<EOF > /etc/os-release
 PRETTY_NAME="SavarezOS GNU/Linux"
 NAME="SavarezOS"
@@ -11,9 +14,6 @@ SUPPORT_URL="https://github.com/AnandaAnugrahHandyanto/SavarezOS_Debian-Based/is
 LOGO="savarez-logo"
 EOF
 
-echo "SavarezOS-Alpha" > /etc/debian_version
-echo "SavarezOS" > /etc/hostname
-
 mkdir -p /etc/live/config.conf.d
 cat <<EOF > /etc/live/config.conf.d/savarez.conf
 LIVE_USER_DEFAULT_GROUPS="sudo audio video cdrom desktop plugdev"
@@ -21,39 +21,36 @@ LIVE_USERNAME="user"
 LIVE_USER_FULLNAME="SavarezOS User"
 EOF
 
+apt-get purge -y desktop-base || true
+
 WP_SAVAREZ="/usr/share/savarez/savarez-wallpaper.png"
 
-mkdir -p /usr/share/images/desktop-base
-cp -f "$WP_SAVAREZ" /usr/share/images/desktop-base/default-wallpaper.png
-cp -f "$WP_SAVAREZ" /usr/share/images/desktop-base/desktop-wallpaper
+for dir in /usr/share/wallpapers/Next /usr/share/images/desktop-base; do
+    mkdir -p "$dir/contents/images"
+    find "$dir" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.svg" \) -exec cp -f "$WP_SAVAREZ" {} \;
+done
 
-mkdir -p /usr/share/wallpapers/Next/contents/images/
-if [ -d /usr/share/wallpapers/Next/contents/images/ ]; then
-    find /usr/share/wallpapers/Next/contents/images/ -type f -exec cp -f "$WP_SAVAREZ" {} \;
-fi
+mkdir -p /etc/skel/.config
+cat <<EOF > /etc/skel/.config/plasma-org.kde.plasma.desktop-appletsrc
+[Containments][1]
+wallpaperplugin=org.kde.image
 
-if [ -d /usr/share/sddm/themes/debian-theme ]; then
-    cp -f "$WP_SAVAREZ" /usr/share/sddm/themes/debian-theme/debian-background.png
-    sed -i 's/Debian Live/SavarezOS Live/g' /usr/share/sddm/themes/debian-theme/theme.conf
-    cp -f /usr/share/savarez/savarez-logo.png /usr/share/sddm/themes/debian-theme/logo.png
+[Containments][1][Wallpaper][org.kde.image][General]
+Image=file://$WP_SAVAREZ
+EOF
+
+mkdir -p /usr/share/sddm/themes/debian-theme
+cp -f "$WP_SAVAREZ" /usr/share/sddm/themes/debian-theme/debian-background.png
+if [ -f /usr/share/sddm/themes/debian-theme/theme.conf ]; then
+    sed -i 's/Debian Live/SavarezOS/g' /usr/share/sddm/themes/debian-theme/theme.conf
+    cp -f /usr/share/savarez/savarez-logo.png /usr/share/sddm/themes/debian-theme/logo.png || true
 fi
 
 mkdir -p /etc/skel/Desktop
-mkdir -p /etc/skel/.config/autostart
-
 if [ -f /usr/share/applications/install-savarezos.desktop ]; then
     cp -f /usr/share/applications/install-savarezos.desktop /etc/skel/Desktop/
     chmod +x /etc/skel/Desktop/install-savarezos.desktop
 fi
 
-cat <<EOF > /etc/skel/.config/autostart/set-wallpaper.desktop
-[Desktop Entry]
-Type=Application
-Name=Set Savarez Wallpaper
-Exec=dbus-send --session --dest=org.kde.plasmashell --type=method_call /MainApplication org.kde.PlasmaShell.evaluateScript string:'var allDesktops = desktops(); for (var i = 0; i < allDesktops.length; i++) { d = allDesktops[i]; d.wallpaperPlugin = "org.kde.image"; d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General"); d.writeConfig("Image", "file:///usr/share/savarez/savarez-wallpaper.png"); }'
-Icon=preferences-desktop-wallpaper
-Terminal=false
-NoDisplay=true
-EOF
-
+echo "SavarezOS GNU/Linux \n \l" > /etc/issue
 rm -f /usr/share/applications/install-debian.desktop
