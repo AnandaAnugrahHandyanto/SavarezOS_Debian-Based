@@ -6,8 +6,8 @@ echo "== SavarezOS FINAL LIVE HOOK =="
 echo "SavarezOS-Alpha" > /etc/debian_version
 echo "SavarezOS" > /etc/hostname
 
-cat <<EOF > /etc/os-release
-PRETTY_NAME="SavarezOS GNU/Linux (Live)"
+cat <<EOF > /usr/lib/os-release
+PRETTY_NAME="SavarezOS GNU/Linux"
 NAME="SavarezOS"
 ID=savarezos
 ID_LIKE=debian
@@ -16,11 +16,20 @@ HOME_URL="https://github.com/AnandaAnugrahHandyanto/SavarezOS_Debian-Based"
 LOGO=savarez-logo
 EOF
 
+for size in 16 32 48 64 128 256; do
+    mkdir -p /usr/share/icons/hicolor/${size}x${size}/apps
+    [ -f /usr/share/savarez/savarez-logo.png ] && \
+        cp -f /usr/share/savarez/savarez-logo.png \
+        /usr/share/icons/hicolor/${size}x${size}/apps/savarez-logo.png
+done
+
 mkdir -p /usr/share/icons/hicolor/scalable/apps
 cp -f /usr/share/savarez/savarez-logo.png \
     /usr/share/icons/hicolor/scalable/apps/savarez-logo.png
 ln -sf /usr/share/savarez/savarez-logo.png \
     /usr/share/pixmaps/savarez-logo.png
+
+gtk-update-icon-cache -f /usr/share/icons/hicolor || true
 
 mkdir -p /etc/live/config.conf.d
 cat <<EOF > /etc/live/config.conf.d/99-savarez.conf
@@ -29,22 +38,61 @@ LIVE_USER_FULLNAME="SavarezOS Live User"
 LIVE_USER_DEFAULT_GROUPS="sudo audio video cdrom plugdev netdev"
 EOF
 
-WP="/usr/share/savarez/savarez-wallpaper.png"
+WP_SRC="/usr/share/savarez/savarez-wallpaper.png"
+WP_DST="/usr/share/images/desktop-base/default.png"
 
-if [ -f "$WP" ]; then
+if [ -f "$WP_SRC" ]; then
     mkdir -p /usr/share/images/desktop-base
-    cp -f "$WP" /usr/share/images/desktop-base/default.png
-    cp -f "$WP" /usr/share/images/desktop-base/desktop-background.png
-    cp -f "$WP" /usr/share/images/desktop-base/login-background.png || true
+    cp -f "$WP_SRC" "$WP_DST"
+    cp -f "$WP_SRC" /usr/share/images/desktop-base/desktop-background.png
+    cp -f "$WP_SRC" /usr/share/images/desktop-base/login-background.png || true
 fi
 
 mkdir -p /etc/xdg
 cat <<EOF > /etc/xdg/plasma-org.kde.plasma.desktop-appletsrc
+# savarez-live-default
 [Containments][1]
 wallpaperplugin=org.kde.image
 [Containments][1][Wallpaper][org.kde.image][General]
-Image=file:///usr/share/images/desktop-base/default.png
+Image=file://$WP_DST
 EOF
+
+mkdir -p /etc/profile.d
+cat <<'EOF' > /etc/profile.d/99-savarez-wallpaper.sh
+#!/bin/sh
+
+USER_HOME="/home/user"
+CONF="$USER_HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+WP="/usr/share/images/desktop-base/default.png"
+
+[ -f "$WP" ] || exit 0
+[ -d "$USER_HOME" ] || exit 0
+[ -f "$CONF" ] || exit 0
+
+grep -q savarez-wallpaper-applied "$CONF" && exit 0
+
+cat <<EOC >> "$CONF"
+
+# savarez-wallpaper-applied
+[Containments][1][Wallpaper][org.kde.image][General]
+Image=file://$WP
+EOC
+
+chown user:user "$CONF"
+EOF
+
+chmod +x /etc/profile.d/99-savarez-wallpaper.sh
+
+mkdir -p /etc/skel/Desktop
+cp -f /usr/share/applications/install-savarezos.desktop \
+    /etc/skel/Desktop/
+chmod +x /etc/skel/Desktop/install-savarezos.desktop
+
+cat <<'EOF' > /etc/profile.d/99-remove-installer.sh
+#!/bin/sh
+rm -f "$HOME/Desktop/install-savarezos.desktop" 2>/dev/null || true
+EOF
+chmod +x /etc/profile.d/99-remove-installer.sh
 
 mkdir -p /etc/sddm.conf.d
 
@@ -60,7 +108,7 @@ Current=debian-theme
 EOF
 
 if [ -d /usr/share/sddm/themes/debian-theme ]; then
-    cp -f "$WP" /usr/share/sddm/themes/debian-theme/background.png
+    cp -f "$WP_DST" /usr/share/sddm/themes/debian-theme/background.png
     cp -f /usr/share/savarez/savarez-logo.png \
         /usr/share/sddm/themes/debian-theme/logo.png
     sed -i 's/Debian/SavarezOS/g' \
@@ -68,10 +116,11 @@ if [ -d /usr/share/sddm/themes/debian-theme ]; then
 fi
 
 mkdir -p /etc/X11/xorg.conf.d
-cat <<EOF > /etc/X11/xorg.conf.d/20-modesetting.conf
+cat <<EOF > /etc/X11/xorg.conf.d/10-generic.conf
 Section "Device"
-    Identifier "VirtualBox"
+    Identifier "Generic Graphics"
     Driver "modesetting"
+    Option "AccelMethod" "glamor"
 EndSection
 EOF
 
