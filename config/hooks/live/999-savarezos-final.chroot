@@ -1,11 +1,13 @@
 #!/bin/sh
 set -e
 
+echo "== SavarezOS FINAL LIVE HOOK =="
+
 echo "SavarezOS-Alpha" > /etc/debian_version
 echo "SavarezOS" > /etc/hostname
 
 cat <<EOF > /etc/os-release
-PRETTY_NAME="SavarezOS GNU/Linux"
+PRETTY_NAME="SavarezOS GNU/Linux (Live)"
 NAME="SavarezOS"
 ID=savarezos
 ID_LIKE=debian
@@ -15,32 +17,29 @@ LOGO=savarez-logo
 EOF
 
 mkdir -p /usr/share/icons/hicolor/scalable/apps
-if [ -f /usr/share/savarez/savarez-logo.png ]; then
-    cp -f /usr/share/savarez/savarez-logo.png \
-        /usr/share/icons/hicolor/scalable/apps/savarez-logo.png
-    ln -sf /usr/share/savarez/savarez-logo.png \
-        /usr/share/pixmaps/savarez-logo.png
-fi
+cp -f /usr/share/savarez/savarez-logo.png \
+    /usr/share/icons/hicolor/scalable/apps/savarez-logo.png
+ln -sf /usr/share/savarez/savarez-logo.png \
+    /usr/share/pixmaps/savarez-logo.png
 
 mkdir -p /etc/live/config.conf.d
-cat <<EOF > /etc/live/config.conf.d/savarez.conf
-LIVE_USER_DEFAULT_GROUPS="sudo audio video cdrom plugdev netdev"
+cat <<EOF > /etc/live/config.conf.d/99-savarez.conf
+LIVE_USERNAME="user"
 LIVE_USER_FULLNAME="SavarezOS Live User"
+LIVE_USER_DEFAULT_GROUPS="sudo audio video cdrom plugdev netdev"
 EOF
 
 WP="/usr/share/savarez/savarez-wallpaper.png"
 
 if [ -f "$WP" ]; then
     mkdir -p /usr/share/images/desktop-base
-    cp -f "$WP" /usr/share/images/desktop-base/default
     cp -f "$WP" /usr/share/images/desktop-base/default.png
-    cp -f "$WP" /usr/share/images/desktop-base/desktop-background
     cp -f "$WP" /usr/share/images/desktop-base/desktop-background.png
     cp -f "$WP" /usr/share/images/desktop-base/login-background.png || true
 fi
 
-mkdir -p /etc/skel/.config
-cat <<EOF > /etc/skel/.config/plasma-org.kde.plasma.desktop-appletsrc
+mkdir -p /etc/xdg
+cat <<EOF > /etc/xdg/plasma-org.kde.plasma.desktop-appletsrc
 [Containments][1]
 wallpaperplugin=org.kde.image
 [Containments][1][Wallpaper][org.kde.image][General]
@@ -49,9 +48,10 @@ EOF
 
 mkdir -p /etc/sddm.conf.d
 
-cat <<EOF > /etc/sddm.conf.d/10-x11.conf
-[General]
-DisplayServer=x11
+cat <<EOF > /etc/sddm.conf.d/10-live.conf
+[Autologin]
+User=user
+Session=plasma
 EOF
 
 cat <<EOF > /etc/sddm.conf.d/20-theme.conf
@@ -60,19 +60,12 @@ Current=debian-theme
 EOF
 
 if [ -d /usr/share/sddm/themes/debian-theme ]; then
-    [ -f "$WP" ] && cp -f "$WP" /usr/share/sddm/themes/debian-theme/background.png
-    [ -f /usr/share/savarez/savarez-logo.png ] && \
-        cp -f /usr/share/savarez/savarez-logo.png \
+    cp -f "$WP" /usr/share/sddm/themes/debian-theme/background.png
+    cp -f /usr/share/savarez/savarez-logo.png \
         /usr/share/sddm/themes/debian-theme/logo.png
-    [ -f /usr/share/sddm/themes/debian-theme/theme.conf ] && \
-        sed -i 's/Debian/SavarezOS/g' /usr/share/sddm/themes/debian-theme/theme.conf
+    sed -i 's/Debian/SavarezOS/g' \
+        /usr/share/sddm/themes/debian-theme/theme.conf || true
 fi
-
-sed -i 's/name:.*/name: SavarezOS/' \
- /etc/calamares/branding/savarez/branding.desc 2>/dev/null || true
-
-systemctl disable live-config.service 2>/dev/null || true
-systemctl disable live-config.target 2>/dev/null || true
 
 mkdir -p /etc/X11/xorg.conf.d
 cat <<EOF > /etc/X11/xorg.conf.d/20-modesetting.conf
@@ -83,6 +76,6 @@ EndSection
 EOF
 
 rm -f /usr/share/applications/install-debian.desktop
-echo "SavarezOS GNU/Linux \n \l" > /etc/issue
+echo "SavarezOS GNU/Linux (Live) \n \l" > /etc/issue
 
-echo "SavarezOS Hook DONE"
+echo "== SavarezOS LIVE HOOK DONE =="
