@@ -1,50 +1,28 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
-echo "[SavarezOS] Live hook started"
+echo "== SavarezOS LIVE HOOK =="
 
-LIVE_USER="user"
-HOME_DIR="/home/$LIVE_USER"
-
-# ===============================
-# 1. Autologin LIVE user (SDDM)
-# ===============================
+# Live user autologin
 mkdir -p /etc/sddm.conf.d
-cat <<EOF >/etc/sddm.conf.d/autologin.conf
+cat <<EOF > /etc/sddm.conf.d/10-live.conf
 [Autologin]
-User=$LIVE_USER
-Session=plasma.desktop
+User=user
+Session=plasma
 EOF
 
-passwd -d "$LIVE_USER" || true
-
-# ===============================
-# 2. LIVE wallpaper (KDE Plasma)
-# ===============================
+# Live wallpaper (Plasma override)
 mkdir -p /etc/xdg
-cat <<EOF >/etc/xdg/plasma-org.kde.plasma.desktop-appletsrc
+cat <<EOF > /etc/xdg/plasma-org.kde.plasma.desktop-appletsrc
+[Containments][1]
+wallpaperplugin=org.kde.image
 [Containments][1][Wallpaper][org.kde.image][General]
 Image=file:///usr/share/savarez/savarez-wallpaper.png
 EOF
 
-# ===============================
-# 3. Installer shortcut (LIVE ONLY)
-# ===============================
-DESKTOP_DIR="$HOME_DIR/Desktop"
-mkdir -p "$DESKTOP_DIR"
+# Installer shortcut only in live
+mkdir -p /etc/skel/Desktop
+cp /usr/share/applications/install-savarezos.desktop /etc/skel/Desktop/
+chmod +x /etc/skel/Desktop/install-savarezos.desktop
 
-cat <<EOF >"$DESKTOP_DIR/install-savarezos.desktop"
-[Desktop Entry]
-Name=Install SavarezOS
-Comment=Install SavarezOS to disk
-Exec=sudo calamares
-Icon=system-installer
-Terminal=false
-Type=Application
-Categories=System;
-EOF
-
-chmod +x "$DESKTOP_DIR/install-savarezos.desktop"
-chown -R "$LIVE_USER:$LIVE_USER" "$DESKTOP_DIR"
-
-echo "[SavarezOS] Live hook finished"
+echo "== LIVE HOOK DONE =="
