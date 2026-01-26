@@ -1,62 +1,85 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
-echo "=== SavarezOS POST-INSTALL ==="
+echo "[SavarezOS] Post-install branding started"
 
-ROOT="/mnt"
+ROOT="$CALAMARES_ROOT"
 
 # ===============================
-# OS RELEASE (REMOVE '12')
+# 1. OS Branding (NO VERSION NUMBER)
 # ===============================
-cat <<EOF > $ROOT/etc/os-release
-PRETTY_NAME="SavarezOS GNU/Linux"
+cat <<EOF >"$ROOT/etc/os-release"
 NAME="SavarezOS"
+PRETTY_NAME="SavarezOS"
 ID=savarezos
-ID_LIKE=debian
-VERSION_ID="alpha"
-LOGO=savarez-logo
+VERSION=""
+VERSION_ID=""
 EOF
 
-echo "SavarezOS-Alpha" > $ROOT/etc/debian_version
-echo "SavarezOS" > $ROOT/etc/hostname
+echo "SavarezOS" >"$ROOT/etc/hostname"
 
 # ===============================
-# WALLPAPER (INSTALLED)
+# 2. KDE Default Wallpaper (INSTALLED)
 # ===============================
-WP="$ROOT/usr/share/savarez/savarez-wallpaper.png"
-
-if [ -f "$WP" ]; then
-    mkdir -p $ROOT/usr/share/images/desktop-base
-    cp -f "$WP" $ROOT/usr/share/images/desktop-base/default.png
-    cp -f "$WP" $ROOT/usr/share/images/desktop-base/desktop-background.png
-    cp -f "$WP" $ROOT/usr/share/images/desktop-base/login-background.png || true
-fi
-
-mkdir -p $ROOT/etc/xdg
-cat <<EOF > $ROOT/etc/xdg/plasma-org.kde.plasma.desktop-appletsrc
-[Containments][1]
-wallpaperplugin=org.kde.image
+mkdir -p "$ROOT/etc/xdg"
+cat <<EOF >"$ROOT/etc/xdg/plasma-org.kde.plasma.desktop-appletsrc"
 [Containments][1][Wallpaper][org.kde.image][General]
-Image=file:///usr/share/images/desktop-base/default.png
+Image=file:///usr/share/savarez/savarez-wallpaper.png
 EOF
 
 # ===============================
-# ICON & LOGO (INSTALLED)
+# 3. Neofetch ASCII (CUSTOM)
 # ===============================
-for size in 16 32 48 64 128 256; do
-    mkdir -p $ROOT/usr/share/icons/hicolor/${size}x${size}/apps
-    [ -f $ROOT/usr/share/savarez/savarez-logo.svg ] && \
-        cp -f $ROOT/usr/share/savarez/savarez-logo.svg \
-        $ROOT/usr/share/icons/hicolor/${size}x${size}/apps/savarez-logo.svg
-done
+mkdir -p "$ROOT/etc/neofetch"
 
-chroot $ROOT gtk-update-icon-cache -f /usr/share/icons/hicolor || true
+cat <<'EOF' >"$ROOT/etc/neofetch/config.conf"
+ascii_distro="SavarezOS"
+EOF
+
+mkdir -p "$ROOT/etc/neofetch/ascii"
+
+cat <<'EOF' >"$ROOT/etc/neofetch/ascii/SavarezOS"
+   ███████╗ █████╗ ██╗   ██╗
+   ██╔════╝██╔══██╗██║   ██║
+   ███████╗███████║██║   ██║
+   ╚════██║██╔══██║╚██╗ ██╔╝
+   ███████║██║  ██║ ╚████╔╝
+   ╚══════╝╚═╝  ╚═╝  ╚═══╝
+
+          SavarezOS
+EOF
 
 # ===============================
-# GRUB THEME
+# 4. GRUB THEME (VALID)
 # ===============================
-mkdir -p $ROOT/usr/share/grub/themes/SavarezOS
-cp -f $ROOT/usr/share/savarez/grub-background.png \
-    $ROOT/usr/share/grub/themes/SavarezOS/
+GRUB_THEME_DIR="$ROOT/boot/grub/themes/SavarezOS"
+mkdir -p "$GRUB_THEME_DIR"
 
-cp -f /etc/cal
+cp /usr/share/savarez/grub-background.png "$GRUB_THEME_DIR/background.png"
+
+cat <<EOF >"$GRUB_THEME_DIR/theme.txt"
+title-text: "SavarezOS"
+title-font: "DejaVu Sans Bold 24"
+title-color: "#ffffff"
+desktop-image: "background.png"
+terminal-font: "DejaVu Sans Mono 16"
+EOF
+
+cat <<EOF >"$ROOT/etc/default/grub"
+GRUB_TIMEOUT=5
+GRUB_DISTRIBUTOR="SavarezOS"
+GRUB_THEME="/boot/grub/themes/SavarezOS/theme.txt"
+EOF
+
+# ===============================
+# 5. Remove installer shortcut AFTER install
+# ===============================
+rm -f "$ROOT/home/"*/Desktop/install-savarezos.desktop || true
+
+# ===============================
+# 6. Fix black screen (ensure display manager)
+# ===============================
+ln -sf /lib/systemd/system/sddm.service \
+      "$ROOT/etc/systemd/system/display-manager.service"
+
+echo "[SavarezOS] Post-install branding finished"

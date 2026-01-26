@@ -1,5 +1,5 @@
 type: job
-name: savarezos-branding
-interface: process
-command: exec.sh
-timeout: 0
+name: "savarez-branding"
+interface: scripting
+script: exec.sh
+timeout: 300
