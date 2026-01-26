@@ -12,24 +12,6 @@ ark
 kde-config-sddm
 plasma-workspace-wayland
 
-# Android Dev Tools
-adb
-fastboot
-git
-curl
-wget
-build-essential
-bc
-bison
-flex
-libssl-dev
-make
-openjdk-17-jdk
-python3
-zip
-unzip
-libncurses5
-
 # Bootloader essentials
 grub-efi-amd64-bin
 grub-common

@@ -1,0 +1,5 @@
+type: job
+name: savarezos-branding
+interface: process
+command: exec.sh
+timeout: 0

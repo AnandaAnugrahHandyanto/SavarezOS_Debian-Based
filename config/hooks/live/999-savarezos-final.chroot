@@ -1,29 +1,38 @@
 #!/bin/sh
 set -e
 
-echo "== SavarezOS LIVE =="
+echo "=== SavarezOS LIVE HOOK ==="
 
+# ===============================
+# BASIC IDENTITY (LIVE ONLY)
+# ===============================
 echo "SavarezOS-Alpha" > /etc/debian_version
 echo "SavarezOS" > /etc/hostname
 
-cat <<EOF > /usr/lib/os-release
-PRETTY_NAME="SavarezOS GNU/Linux"
+cat <<EOF > /etc/os-release
+PRETTY_NAME="SavarezOS GNU/Linux (Live)"
 NAME="SavarezOS"
 ID=savarezos
 ID_LIKE=debian
 VERSION_ID="alpha"
 LOGO=savarez-logo
-HOME_URL="https://github.com/AnandaAnugrahHandyanto/SavarezOS_Debian-Based"
-EOF
-cp /usr/lib/os-release /etc/os-release
-
-cat <<EOF > /etc/lsb-release
-DISTRIB_ID=SavarezOS
-DISTRIB_RELEASE=alpha
-DISTRIB_DESCRIPTION="SavarezOS GNU/Linux"
 EOF
 
+# ===============================
+# LIVE USER CONFIG
+# ===============================
+mkdir -p /etc/live/config.conf.d
+cat <<EOF > /etc/live/config.conf.d/99-savarez.conf
+LIVE_USERNAME="user"
+LIVE_USER_FULLNAME="SavarezOS Live User"
+LIVE_USER_DEFAULT_GROUPS="sudo audio video cdrom plugdev netdev"
+EOF
+
+# ===============================
+# WALLPAPER (LIVE)
+# ===============================
 WP="/usr/share/savarez/savarez-wallpaper.png"
+
 if [ -f "$WP" ]; then
     mkdir -p /usr/share/images/desktop-base
     cp -f "$WP" /usr/share/images/desktop-base/default.png
@@ -31,87 +40,60 @@ if [ -f "$WP" ]; then
     cp -f "$WP" /usr/share/images/desktop-base/login-background.png || true
 fi
 
+# KDE default wallpaper (LIVE)
 mkdir -p /etc/xdg
 cat <<EOF > /etc/xdg/plasma-org.kde.plasma.desktop-appletsrc
-# SavarezOS default wallpaper
 [Containments][1]
 wallpaperplugin=org.kde.image
 [Containments][1][Wallpaper][org.kde.image][General]
 Image=file:///usr/share/images/desktop-base/default.png
 EOF
 
-mkdir -p /etc/live/config.conf.d
-cat <<EOF > /etc/live/config.conf.d/99-savarez.conf
-LIVE_USERNAME="user"
-LIVE_USER_FULLNAME="SavarezOS Live User"
-LIVE_USER_PASSWORD=""
-LIVE_USER_DEFAULT_GROUPS="sudo audio video cdrom plugdev netdev"
-EOF
+# ===============================
+# ICON + LOGO (LIVE)
+# ===============================
+for size in 16 32 48 64 128 256; do
+    mkdir -p /usr/share/icons/hicolor/${size}x${size}/apps
+    [ -f /usr/share/savarez/savarez-logo.svg ] && \
+        cp -f /usr/share/savarez/savarez-logo.svg \
+        /usr/share/icons/hicolor/${size}x${size}/apps/savarez-logo.svg
+done
 
+gtk-update-icon-cache -f /usr/share/icons/hicolor || true
+
+# ===============================
+# INSTALLER SHORTCUT (LIVE ONLY)
+# ===============================
+mkdir -p /etc/skel/Desktop
+cp -f /usr/share/applications/install-savarezos.desktop \
+    /etc/skel/Desktop/
+chmod +x /etc/skel/Desktop/install-savarezos.desktop
+
+# ===============================
+# SDDM AUTOLOGIN (LIVE)
+# ===============================
 mkdir -p /etc/sddm.conf.d
 cat <<EOF > /etc/sddm.conf.d/10-live.conf
 [Autologin]
 User=user
 Session=plasma
 EOF
-cat <<EOF > /etc/sddm.conf.d/20-theme.conf
-[Theme]
-Current=debian-theme
-EOF
 
-if [ -d /usr/share/sddm/themes/debian-theme ]; then
-    cp -f "$WP" /usr/share/sddm/themes/debian-theme/background.png
-    cp -f /usr/share/savarez/savarez-logo.png \
-       /usr/share/sddm/themes/debian-theme/logo.png
-    sed -i 's/Debian/SavarezOS/g' \
-       /usr/share/sddm/themes/debian-theme/theme.conf || true
-fi
-
-mkdir -p /etc/skel/Desktop
-cp -f /usr/share/applications/install-savarezos.desktop \
-   /etc/skel/Desktop/
-chmod +x /etc/skel/Desktop/install-savarezos.desktop
-
-\mkdir -p /etc/X11/xorg.conf.d
+# ===============================
+# GRAPHICS SAFETY (LIVE)
+# ===============================
+mkdir -p /etc/X11/xorg.conf.d
 cat <<EOF > /etc/X11/xorg.conf.d/20-modesetting.conf
 Section "Device"
     Identifier "Generic Graphics"
     Driver "modesetting"
-    Option "AccelMethod" "glamor"
 EndSection
 EOF
 
-mkdir -p /boot/grub/themes/savarezos
-cp -f "$WP" /boot/grub/themes/savarezos/background.png
-
-cat <<EOF > /boot/grub/themes/savarezos/theme.txt
-+ color_normal=light-gray/black
-+ title_text=white/black
-+ desktop_image=/boot/grub/themes/savarezos/background.png
-EOF
-
-cat <<EOF > /etc/default/grub.d/30_savarez_theme.cfg
-GRUB_THEME="/boot/grub/themes/savarezos/theme.txt"
-EOF
-
-update-grub || true
-
-mkdir -p /etc/neofetch
-cat <<EOF > /etc/neofetch/config.conf
-ascii_distro="SavarezOS"
-ascii_art() {
-cat <<"ART"
-   ███████╗ █████╗ ██╗   ██╗███████╗██████╗ ███████╗
-   ██╔════╝██╔══██╗██║   ██║██╔════╝██╔══██╗██╔════╝
-   ███████╗███████║██║   ██║█████╗  ██████╔╝███████╗
-   ╚════██║██╔══██║██║   ██║██╔══╝  ██╔══██╗╚════██║
-   ███████║██║  ██║╚██████╔╝███████╗██║  ██║███████║
-   ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚══════╝
-ART
-}
-EOF
-
+# ===============================
+# CLEANUP
+# ===============================
 rm -f /usr/share/applications/install-debian.desktop
-echo "SavarezOS GNU/Linux (Live)" > /etc/issue
+echo "SavarezOS GNU/Linux (Live) \n \l" > /etc/issue
 
-echo "== SavarezOS LIVE =="
+echo "=== SavarezOS LIVE HOOK DONE ==="

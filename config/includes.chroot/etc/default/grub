@@ -3,3 +3,4 @@ GRUB_TIMEOUT=5
 GRUB_DISTRIBUTOR="SavarezOS"
 GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
 GRUB_BACKGROUND="/usr/share/savarez/savarez-wallpaper.png"
+GRUB_THEME="/usr/share/grub/themes/SavarezOS/theme.txt"

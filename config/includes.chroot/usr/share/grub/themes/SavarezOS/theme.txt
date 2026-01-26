@@ -1,0 +1,47 @@
+title-text: "SavarezOS GNU/Linux"
+title-font: "DejaVu Sans Bold 20"
+title-color: "#ffffff"
+title-text-align: center
+title-position: 50%, 10%
+
+desktop-image: "grub-background.png"
+
+# MENU
+
++ boot_menu {
+    left = 15%
+    top = 35%
+    width = 70%
+    height = 45%
+    item_font = "DejaVu Sans Mono 14"
+    item_color = "#dddddd"
+    selected_item_color = "#ffffff"
+    selected_item_bg_color = "#2c7be5"
+    item_height = 28
+    item_padding = 6
+    item_spacing = 4
+}
+
+# PROGRESS BAR
+
++ progress_bar {
+    left = 30%
+    top = 85%
+    width = 40%
+    height = 16
+    fg_color = "#2c7be5"
+    bg_color = "#444444"
+    border_color = "#000000"
+}
+
+# TIMEOUT MESSAGE
+
++ label {
+    text = "Booting SavarezOS..."
+    left = 50%
+    top = 90%
+    width = 100%
+    align = "center"
+    color = "#ffffff"
+    font = "DejaVu Sans Mono 12"
+}
