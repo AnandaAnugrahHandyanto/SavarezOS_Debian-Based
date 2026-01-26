@@ -1,20 +1,16 @@
 #!/bin/sh
 set -e
 
-echo "== SavarezOS FINAL LIVE HOOK =="
-
-echo "SavarezOS-Alpha" > /etc/debian_version
-echo "SavarezOS" > /etc/hostname
-
 cat <<EOF > /usr/lib/os-release
 PRETTY_NAME="SavarezOS GNU/Linux"
 NAME="SavarezOS"
 ID=savarezos
 ID_LIKE=debian
 VERSION_ID="alpha"
-HOME_URL="https://github.com/AnandaAnugrahHandyanto/SavarezOS_Debian-Based"
 LOGO=savarez-logo
 EOF
+
+cp -f /usr/lib/os-release /etc/os-release
 
 cat <<EOF > /etc/lsb-release
 DISTRIB_ID=SavarezOS
@@ -22,12 +18,25 @@ DISTRIB_RELEASE=alpha
 DISTRIB_DESCRIPTION="SavarezOS GNU/Linux"
 EOF
 
+WP="/usr/share/savarez/savarez-wallpaper.png"
+
+if [ -f "$WP" ]; then
+    for f in \
+      /usr/share/images/desktop-base/default.png \
+      /usr/share/images/desktop-base/desktop-background.png \
+      /usr/share/images/desktop-base/login-background.png
+    do
+        mkdir -p "$(dirname "$f")"
+        cp -f "$WP" "$f"
+    done
+fi
+
 mkdir -p /etc/live/config.conf.d
 cat <<EOF > /etc/live/config.conf.d/99-savarez.conf
 LIVE_USERNAME="user"
 LIVE_USER_FULLNAME="SavarezOS Live User"
-LIVE_USER_DEFAULT_GROUPS="sudo audio video cdrom plugdev netdev"
 LIVE_USER_PASSWORD=""
+LIVE_USER_DEFAULT_GROUPS="sudo audio video cdrom plugdev netdev"
 EOF
 
 mkdir -p /etc/sddm.conf.d
@@ -35,51 +44,48 @@ cat <<EOF > /etc/sddm.conf.d/10-live.conf
 [Autologin]
 User=user
 Session=plasma
-Relogin=true
 EOF
-
-WP="/usr/share/savarez/savarez-wallpaper.png"
-
-mkdir -p /usr/share/images/desktop-base
-cp -f "$WP" /usr/share/images/desktop-base/default.png
-cp -f "$WP" /usr/share/images/desktop-base/desktop-background.png
-cp -f "$WP" /usr/share/images/desktop-base/login-background.png || true
-
-mkdir -p /etc/xdg
-cat <<EOF > /etc/xdg/plasma-org.kde.plasma.desktop-appletsrc
-[Containments][1]
-wallpaperplugin=org.kde.image
-[Containments][1][Wallpaper][org.kde.image][General]
-Image=file:///usr/share/images/desktop-base/default.png
-EOF
-
-for size in 16 32 48 64 128 256; do
-    mkdir -p /usr/share/icons/hicolor/${size}x${size}/apps
-    cp -f /usr/share/savarez/savarez-logo.png \
-       /usr/share/icons/hicolor/${size}x${size}/apps/savarez-logo.png
-done
-
-mkdir -p /usr/share/icons/hicolor/scalable/apps
-cp -f /usr/share/savarez/savarez-logo.png \
-   /usr/share/icons/hicolor/scalable/apps/savarez-logo.png
-
-gtk-update-icon-cache -f /usr/share/icons/hicolor || true
 
 mkdir -p /etc/skel/Desktop
 cp -f /usr/share/applications/install-savarezos.desktop \
    /etc/skel/Desktop/
 chmod +x /etc/skel/Desktop/install-savarezos.desktop
 
-rm -f /usr/share/applications/install-debian.desktop
+for size in 16 32 48 64 128 256 scalable; do
+    mkdir -p /usr/share/icons/hicolor/${size}/apps
+    cp -f /usr/share/savarez/savarez-logo.png \
+      /usr/share/icons/hicolor/${size}/apps/savarez-logo.png
+done
 
-mkdir -p /etc/X11/xorg.conf.d
-cat <<EOF > /etc/X11/xorg.conf.d/20-modesetting.conf
-Section "Device"
-    Identifier "Virtual"
-    Driver "modesetting"
-EndSection
+gtk-update-icon-cache -f /usr/share/icons/hicolor || true
+
+mkdir -p /etc/neofetch
+cat <<'EOF' > /etc/neofetch/config.conf
+ascii_distro="SavarezOS"
+ascii_colors=(4 6 1 7)
+
+ascii_art="
+   ███████╗ █████╗ ██╗   ██╗
+   ██╔════╝██╔══██╗██║   ██║
+   ███████╗███████║██║   ██║
+   ╚════██║██╔══██║██║   ██║
+   ███████║██║  ██║╚██████╔╝
+   ╚══════╝╚═╝  ╚═╝ ╚═════╝
+"
 EOF
 
-echo "SavarezOS GNU/Linux (Live)" > /etc/issue
+mkdir -p /lib/live/config
+cat <<EOF > /lib/live/config/999-savarez-xorg.sh
+#!/bin/sh
+mkdir -p /etc/X11/xorg.conf.d
+cat <<EOC > /etc/X11/xorg.conf.d/20-modesetting.conf
+Section "Device"
+    Identifier "LiveGPU"
+    Driver "modesetting"
+EndSection
+EOC
+EOF
+chmod +x /lib/live/config/999-savarez-xorg.sh
 
-echo "== SavarezOS LIVE HOOK DONE =="
+rm -f /usr/share/applications/install-debian.desktop
+echo "SavarezOS GNU/Linux (Live)" > /etc/issue

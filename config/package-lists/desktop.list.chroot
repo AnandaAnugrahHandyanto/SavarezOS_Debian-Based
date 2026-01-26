@@ -9,7 +9,8 @@ sudo
 konsole
 dolphin
 ark
-network-manager-gnome
+kde-config-sddm
+plasma-workspace-wayland
 
 # Android Dev Tools
 adb
